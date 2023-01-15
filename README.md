@@ -1,17 +1,3 @@
----
-jupyter:
-  jupytext:
-    text_representation:
-      extension: .md
-      format_name: markdown
-      format_version: '1.3'
-      jupytext_version: 1.14.4
-  kernelspec:
-    display_name: py36tf
-    language: python
-    name: py36tf
----
-
 # CT Liver Segmentation with Image Processing
 
 
