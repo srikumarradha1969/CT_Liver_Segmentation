@@ -18,7 +18,7 @@ jupyter:
 CT scans of the liver and biliary tract (the liver, gallbladder, and bile ducts) can provide more detailed information about the liver, gallbladder, and related structures than standard X-rays of the abdomen, thus providing more information related to injuries and/or diseases of the liver and biliary tract.
 
 
-![ctscanliver.png](attachment:./Images/ctscanliver.png)
+![ctscanliver.png](./Images/ctscanliver.png)
 Source : https://www.hopkinsmedicine.org/health/treatment-tests-and-therapies/computed-tomography-ct-or-cat-scan-of-the-liver-and-biliary-tract
 
 
