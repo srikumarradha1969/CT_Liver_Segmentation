@@ -7,173 +7,59 @@ jupyter:
       format_version: '1.3'
       jupytext_version: 1.14.4
   kernelspec:
-    display_name: Python 3
+    display_name: py36tf
     language: python
-    name: python3
+    name: py36tf
 ---
 
-![logo](./Images/logo.png)
+# CT Liver Segmentation with Image Processing
 
 
-<hr>
-**Tutorials, examples, collections, and everything else that falls into the categories: pattern classification, machine learning, and data mining.**
-<hr>
+CT scans of the liver and biliary tract (the liver, gallbladder, and bile ducts) can provide more detailed information about the liver, gallbladder, and related structures than standard X-rays of the abdomen, thus providing more information related to injuries and/or diseases of the liver and biliary tract.
 
 
-# Table of Contents
+![ctscanliver.png](attachment:ctscanliver.png)
+Source : https://www.hopkinsmedicine.org/health/treatment-tests-and-therapies/computed-tomography-ct-or-cat-scan-of-the-liver-and-biliary-tract
 
 
-- [Introduction to Machine Learning and Pattern Classification](#Introduction-to-Machine-Learning-and-Pattern-Classification)
-- [Pre-Processing](#Pre-Processing)
-- [Model Evaluation](#Model-Evaluation)
-- [Parameter Estimation](#Parameter-Estimation)
-- [Machine Learning Algorithms](#Machine-Learning-Algorithms)
-	- [Bayes Classification](#Bayes-Classification)
-	- [Logistic Regression](#Logistic-Regression)
-	- [Neural Networks](#Neural-Networks)
-	- [Ensemble Methods](#Ensemble-Methods)
-- [Statistical Pattern Classification Examples](#Statistical-Pattern-Classification-Examples)
-- [Clustering](#Clustering)
-- [Collecting Data](#Collecting-Data)
-- [Resources](#Resources)
+The segmentation of Liver, although the largest organ visible in the abdomen CT, is challenging to segment. This is mainly due to the varying levels of intensities of the CT Images, as well as due to the presence of other organs such as Gallbladder in close vicinity. Whilst there are numerous Liver Segmentations done and available in the open domain, they are mostly through utilization of CNNs (Convoloutional Neural Networks) on large datasets. However, as mentioned in this link https://theaisummer.com/medical-image-python/, the goal here is to rather rely on basic Image Processing Algorithms than CNNs.  
 
 
-# Introduction to Machine Learning and Pattern Classification
+One size doesn't fit all, at least, that is yet again reaffirmed during this segmentation exercise. However, the Python Notebook Liver_Segmentation_Final.ipynb code arrived at is the result of various different combination of image processing algorithms. One key aspect is the conversion of the DICOM Images to RGB (https://medium.com/analytics-vidhya/how-to-convert-grayscale-dicom-file-to-rgb-dicom-file-with-python-df86ac055bd
+) in order to utilize the powerful features of Open CV Visualization methods. 
 
 
-* Predictive modeling, supervised machine learning, and pattern classification - the big picture [[Markdown]](machine_learning/supervised_intro/introduction_to_supervised_machine_learning.md)
-* Entry Point: Data - Using Python's sci-packages to prepare data for Machine Learning tasks and other data analyses [[IPython nb]](machine_learning/scikit-learn/python_data_entry_point.ipynb)
-* An Introduction to simple linear supervised classification using `scikit-learn` [[IPython nb]](machine_learning/scikit-learn/scikit_linear_classification.ipynb)
+The CT Scan DICOM Images were downloaded from the website https://www.ircad.fr/research/data-sets/liver-segmentation-3d-ircadb-01/ (17th case out of the 20 cases available). This source contains a table that also indicates the major difficulties liver segmentation software may encounter due to the contact with neighbouring organs, an atypical shape or density of the liver, or even artefacts in the image. From the four sub folders available for each case, the "PATIENT_DICOM" and "LABELLED_DICOM" has been utiized for this exercise. The PATIENT_DICOM Folder contains the anonymized patient image in DICOM format, and the LABELLED_DICOM, the labelled image corresponding to the various zones of interest segmented in DICOM format.
 
 
-# Pre-Processing
+In order to tackle the difficulties encountered in this Liver Segmentation, the following steps were taken:-
 
+(a) There the quality of the CT Images was greatly dependent on the chosen CT Hounsfield Window, and hence, varied accordingly. In fact, it was seen that for Image Positions until 170 mm, the CT Window chosen was [150,88] as recommended in the website https://radiopaedia.org/articles/windowing-ct. For Image positions greater  than 170 mm, the CT Window of [150,30] referred in the journal publication https://pubmed.ncbi.nlm.nih.gov/23706868/ was suitable.  
 
-* **Feature Extraction**
-    * Tips and Tricks for Encoding Categorical Features in Classification Tasks [[IPython nb]](preprocessing/feature_encoding.ipynb)
-* **Scaling and Normalization**
-    * About Feature Scaling: Standardization and Min-Max-Scaling (Normalization) [[IPython nb]](preprocessing/about_standardization_normalization.ipynb)
-* **Feature Selection**
-    * Sequential Feature Selection Algorithms [[IPython nb]](dimensionality_reduction/feature_selection/sequential_selection_algorithms.ipynb)
-* **Dimensionality Reduction**
-    * Principal Component Analysis (PCA) [[IPython nb]](dimensionality_reduction/projection/principal_component_analysis.ipynb)
-    * PCA based on the covariance vs. correlation matrix [[IPython nb]](dimensionality_reduction/projection/pca_cov_cor.ipynb)
-    * Linear Discriminant Analysis (LDA) [[IPython nb]](dimensionality_reduction/projection/linear_discriminant_analysis.ipynb)
-    * The effect of scaling and mean centering of variables prior to a PCA [[PDF]](./dimensionality_reduction/projection/scale_center_pca/scale_center_pca.pdf)    
-    * Kernel tricks and nonlinear dimensionality reduction via PCA [[IPython nb]](dimensionality_reduction/projection/kernel_pca.ipynb)
-*  **Representing Text**
-	* Tf-idf Walkthrough for scikit-learn [[IPython nb](./machine_learning/scikit-learn/tfidf_scikit-learn.ipynb)]    
 
+![img_1.png](attachment:img_1.png)
 
-# Model Evaluation
 
+(b) The mean HU Value in the Hounsfield Distribution of the Image was chosen as a criteria for the variation in Binary Threshold, after limiting the Hounsfield Distribution to values between 0 and 150, the Soft Tissue region. 
 
-* An Overview of General Performance Metrics of Binary Classifier Systems [[PDF](./evaluation/performance_metrics/performance_metrics.pdf)]
-* **Cross-Validation**
-    * Streamline your cross-validation workflow - scikit-learn's Pipeline in action [[IPython nb]](machine_learning/scikit-learn/scikit-pipeline.ipynb)
-* Model evaluation, model selection, and algorithm selection in machine learning - Part I [[Markdown]](./evaluation/model-evaluation/model-evaluation-selection-part1.md)
-* Model evaluation, model selection, and algorithm selection in machine learning - Part II [[Markdown]](./evaluation/model-evaluation/model-evaluation-selection-part2.md)
 
+![img_2.png](attachment:img_2.png)
 
-# Parameter Estimation
 
+(c) To isolate the Liver from the brighter Gallbladder, depending on the mean HU Value, the Image was clipped to remove whiter portions with the highest intensities. To increase the quality of the Image, the Binary Threshold cv2.THRESH_BINARY values had to be adjusted depending on the brightness and contrast of the Image. 
 
-* **Parametric Techniques**
-    * Introduction to the Maximum Likelihood Estimate (MLE) [[IPython nb]](parameter_estimation_techniques/maximum_likelihood_estimate.ipynb)
-    * How to calculate Maximum Likelihood Estimates (MLE) for different distributions [[IPython nb]](parameter_estimation_techniques/max_likelihood_est_distributions.ipynb)
+(d) Minimum Area and Centroid location Filters on Contours were introduced for cv2.drawContours to isolate the Liver contour. The Centroid of the Liver was approximated to be in the upper left or upper central area of the CT, based on the LABELLED_DICOM images for different CT Slices. 
 
-* **Non-Parametric Techniques**
-    * Kernel density estimation via the Parzen-window technique [[IPython nb]](parameter_estimation_techniques/parzen_window_technique.ipynb)
-    * The K-Nearest Neighbor (KNN) technique
+(e) With increasing value of Image Position, in the range from 165 to 170, there were two Liver contours, and hence, the code was made suitable to select the largest two contours in the CT, under the above existing area and centroid filter conditions.
 
-* **Regression Analysis**
-    * Linear Regression
-        * Least-Squares fit [[IPython nb]](data_fitting/regression/linregr_least_squares_fit.ipynb)
-    * Non-Linear Regression
 
+![100dcm.png](attachment:100dcm.png)
+Liver Segmentation for Image_100.dcm
 
-# Machine Learning Algorithms
 
+**Way ahead and Improvements**
+While this exercise has focussed only in segmentation of the Liver contour, the ROI (Regions of Interest) is a lot more, and includes other organs, measurements of size, detection of tumours and many other vital applications. The goal here has been to explore how DICOM Images can be processed through different criteria towards achieving Segmentation results. There are already Web applications many similar Segmentations, and further applications as well as improvizations would need a lot more study.
 
-#### Bayes Classification
+```python
 
-- Naive Bayes and Text Classification I - Introduction and Theory [[View PDF](http://sebastianraschka.com/PDFs/articles/naive_bayes_1.pdf)] [[Download PDF](./machine_learning/naive_bayes_1/tex/naive_bayes_1.pdf)] 
-
-#### Logistic Regression
-
-- Out-of-core Learning and Model Persistence using scikit-learn
-[[IPython nb](./machine_learning/scikit-learn/outofcore_modelpersistence.ipynb)]
-
-#### Neural Networks
-
-- Artificial Neurons and Single-Layer Neural Networks - How Machine Learning Algorithms Work Part 1 [[IPython nb](./machine_learning/singlelayer_neural_networks/singlelayer_neural_networks.ipynb)]
-
-- Activation Function Cheatsheet [[IPython nb](./machine_learning/neural_networks/ipynb/activation_functions.ipynb)]
-
-#### Ensemble Methods
-
-- Implementing a Weighted Majority Rule Ensemble Classifier in scikit-learn  [[IPython nb](./machine_learning/scikit-learn/ensemble_classifier.ipynb)]
-
-#### Decision Trees
-
-- Cheatsheet for Decision Tree Classification [[IPython nb]('./machine_learning/decision_trees/decision-tree-cheatsheet.ipynb')]
-
-
-# Clustering
-
-
-- **Protoype-based clustering**
-- **Hierarchical clustering**
-	- Complete-Linkage Clustering and Heatmaps in Python [[IPython nb](./clustering/hierarchical/clust_complete_linkage.ipynb)]
-- **Density-based clustering**
-- **Graph-based clustering**
-- **Probabilistic-based clustering**
-
-
-# Collecting Data
-
-
-- Collecting Fantasy Soccer Data with Python and Beautiful Soup [[IPython nb](./data_collecting/parse_dreamteamfc_data.ipynb)]
-
-- Download Your Twitter Timeline and Turn into a Word Cloud Using Python [[IPython nb](./data_collecting/twitter_wordcloud.ipynb)]
-
-- Reading MNIST into NumPy arrays [[IPython nb](./data_collecting/reading_mnist.ipynb)]
-
-
-# Statistical Pattern Classification Examples
-
-
-* **Supervised Learning**
-    * Parametric Techniques
-        * Univariate Normal Density
-            * Ex1: 2-classes, equal variances, equal priors [[IPython nb]](stat_pattern_class/supervised/parametric/1_stat_superv_parametric.ipynb)
-            * Ex2: 2-classes, different variances, equal priors [[IPython nb]](stat_pattern_class/supervised/parametric/2_stat_superv_parametric.ipynb)
-            * Ex3: 2-classes, equal variances, different priors [[IPython nb]](stat_pattern_class/supervised/parametric/3_stat_superv_parametric.ipynb)
-            * Ex4: 2-classes, different variances, different priors, loss function [[IPython nb]](stat_pattern_class/supervised/parametric/4_stat_superv_parametric.ipynb)
-            * Ex5: 2-classes, different variances, equal priors, loss function, cauchy distr.[[IPython nb]](stat_pattern_class/supervised/parametric/5_stat_superv_parametric.ipynb)
-
-        * Multivariate Normal Density
-            * Ex5: 2-classes, different variances, equal priors, loss function [[IPython nb]](stat_pattern_class/supervised/parametric/5_stat_superv_parametric.ipynb)
-            * Ex7: 2-classes, equal variances, equal priors [[IPython nb]](stat_pattern_class/supervised/parametric/7_stat_superv_parametric.ipynb)
-
-    * Non-Parametric Techniques
-
-
-# Resources
-
-
-* Matplotlib examples - Visualization techniques for exploratory data analysis [[IPython nb]](resources/matplotlib_viz_gallery.ipynb)
-
-* Copy-and-paste ready LaTex equations [[Markdown]](resources/latex_equations.md)
-
-* Open-source datasets [[Markdown]](resources/dataset_collections.md)
-
-* Free Machine Learning eBooks [[Markdown]](resources/machine_learning_ebooks.md)
-
-* Terms in data science defined in less than 50 words [[Markdown]](resources/data_glossary.md)
-
-* Useful libraries for data science in Python [[Markdown]](resources/python_data_libraries.md)
-
-* General Tips and Advices [[Markdown]](resources/general_tips_and_advices.md)
-
-* A matrix cheatsheat for Python, R, Julia, and MATLAB [[HTML]](http://sebastianraschka.com/github/pattern_classification/matrix_cheatsheet_table.html)
+```
