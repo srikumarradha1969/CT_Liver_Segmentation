@@ -37,13 +37,13 @@ In order to tackle the difficulties encountered in this Liver Segmentation, the 
 (a) There the quality of the CT Images was greatly dependent on the chosen CT Hounsfield Window, and hence, varied accordingly. In fact, it was seen that for Image Positions until 170 mm, the CT Window chosen was [150,88] as recommended in the website https://radiopaedia.org/articles/windowing-ct. For Image positions greater  than 170 mm, the CT Window of [150,30] referred in the journal publication https://pubmed.ncbi.nlm.nih.gov/23706868/ was suitable.  
 
 
-![img_1.png](attachment:img_1.png)
+![img_1.png](./Images/img_1.png)
 
 
 (b) The mean HU Value in the Hounsfield Distribution of the Image was chosen as a criteria for the variation in Binary Threshold, after limiting the Hounsfield Distribution to values between 0 and 150, the Soft Tissue region. 
 
 
-![img_2.png](attachment:img_2.png)
+![img_2.png](./Images/img_2.png)
 
 
 (c) To isolate the Liver from the brighter Gallbladder, depending on the mean HU Value, the Image was clipped to remove whiter portions with the highest intensities. To increase the quality of the Image, the Binary Threshold cv2.THRESH_BINARY values had to be adjusted depending on the brightness and contrast of the Image. 
@@ -53,7 +53,7 @@ In order to tackle the difficulties encountered in this Liver Segmentation, the 
 (e) With increasing value of Image Position, in the range from 165 to 170, there were two Liver contours, and hence, the code was made suitable to select the largest two contours in the CT, under the above existing area and centroid filter conditions.
 
 
-![100dcm.png](attachment:100dcm.png)
+![100dcm.png](./Images/100dcm.png)
 Liver Segmentation for Image_100.dcm
 
 
