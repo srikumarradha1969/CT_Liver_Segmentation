@@ -44,7 +44,7 @@ Liver Segmentation for Image_100.dcm
 
 
 **Way ahead and Improvements**
-While this exercise has focussed only in segmentation of the Liver contour, the ROI (Regions of Interest) is a lot more, and includes other organs, measurements of size, detection of tumours and many other vital applications. The goal here has been to explore how DICOM Images can be processed through different criteria towards achieving Segmentation results. There are already Web applications many similar Segmentations, and further applications as well as improvizations would need a lot more study.
+While this exercise has focussed only in segmentation of the Liver contour, the ROI (Regions of Interest) is a lot more, and includes other organs, measurements of size, detection of tumours and many other vital applications. The goal here was to explore how DICOM Images can be processed through different criteria towards achieving Segmentation results. There are already Web applications many similar Segmentations, and further applications as well as improvizations would need a lot more study.
 
 ```python
 
